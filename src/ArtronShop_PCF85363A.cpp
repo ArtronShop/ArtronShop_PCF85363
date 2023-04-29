@@ -44,7 +44,7 @@ bool ArtronShop_PCF85363A::stop(bool stop) {
 }
 
 uint8_t ArtronShop_PCF85363A::bcd2bin(uint8_t bcd) {
-    return ((bcd >> 4) * 10) + (bcd & 0xFF);
+    return ((bcd >> 4) * 10) + (bcd & 0x0F);
 }
 
 uint8_t ArtronShop_PCF85363A::bin2bcd(uint8_t bin) {
