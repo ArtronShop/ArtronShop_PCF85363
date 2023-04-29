@@ -1,0 +1,24 @@
+#######################################
+# Syntax Coloring Map For 
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+ArtronShop_PCF85363A	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+begin	KEYWORD2
+setTime	KEYWORD2
+getTime	KEYWORD2
+
+writeRAM	KEYWORD2
+readRAM	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
