@@ -17,8 +17,8 @@ class ArtronShop_PCF85363A {
 
         bool stop(bool stop) ;
 
-        uint8_t bcd2bin(uint8_t bcd) ;
-        uint8_t bin2bcd(uint8_t bin) ;
+        uint8_t bcd2dec(uint8_t bcd) ;
+        uint8_t dec2bcd(uint8_t bin) ;
 
     public:
         ArtronShop_PCF85363A(TwoWire *wire = &Wire) ;

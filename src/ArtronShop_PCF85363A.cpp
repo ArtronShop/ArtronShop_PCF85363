@@ -43,12 +43,12 @@ bool ArtronShop_PCF85363A::stop(bool stop) {
     return this->write_reg(0x2E, stop ? 0x01 : 0x00);
 }
 
-uint8_t ArtronShop_PCF85363A::bcd2bin(uint8_t bcd) {
+uint8_t ArtronShop_PCF85363A::bcd2dec(uint8_t bcd) {
     return ((bcd >> 4) * 10) + (bcd & 0x0F);
 }
 
-uint8_t ArtronShop_PCF85363A::bin2bcd(uint8_t bin) {
-    return ((bin / 10) << 4) | (bin % 10);
+uint8_t ArtronShop_PCF85363A::dec2bcd(uint8_t bin) {
+    return (((bin / 10) << 4) & 0xF0) | ((bin % 10) & 0x0F);
 }
 
 #define CHECK_OK(OP) { \
@@ -76,51 +76,34 @@ bool ArtronShop_PCF85363A::begin() {
     return true;
 }
 
-typedef struct __attribute__ ((__packed__)) {
-    uint32_t OS : 1;
-    uint32_t SEC : 7;
-    uint32_t EMON : 1;
-    uint32_t MIN : 7;
-    uint32_t _unused1 : 2;
-    uint32_t HOUR : 6;
-    uint32_t _unused2 : 2;
-    uint32_t DAY : 6;
-    uint32_t _unused3 : 5;
-    uint32_t WEEKDAY : 3;
-    uint32_t _unused4 : 3;
-    uint32_t MON : 5;
-    uint32_t YEAR : 8;
-} Time_Date_Register_t;
-
 bool ArtronShop_PCF85363A::setTime(struct tm t) {
-    Time_Date_Register_t reg_data;
-    memset(&reg_data, 0, sizeof(reg_data));
-    reg_data.SEC = bin2bcd(t.tm_sec) & 0x7F;
-    reg_data.MIN = bin2bcd(t.tm_min) & 0x7F;
-    reg_data.HOUR = bin2bcd(t.tm_hour) & 0x3F;
-    reg_data.DAY = bin2bcd(t.tm_mday - 1) & 0x3F;
-    reg_data.WEEKDAY = bin2bcd(t.tm_wday) & 0x03;
-    reg_data.MON = bin2bcd(t.tm_mon) & 0x1F;
-    reg_data.YEAR = bin2bcd((t.tm_year + 1900) % 100);
+    uint8_t buff[7];
+    buff[0] = dec2bcd(t.tm_sec) & 0x7F;
+    buff[1] = dec2bcd(t.tm_min) & 0x7F;
+    buff[2] = dec2bcd(t.tm_hour) & 0x3F;
+    buff[3] = dec2bcd(t.tm_mday) & 0x3F;
+    buff[4] = dec2bcd(t.tm_wday) & 0x07;
+    buff[5] = dec2bcd(t.tm_mon + 1) & 0x1F;
+    buff[6] = dec2bcd((t.tm_year + 1900) % 100);
 
     CHECK_OK(this->stop(true));
-    CHECK_OK(this->write_reg(0x01, (uint8_t *) &reg_data, sizeof(reg_data)));
+    CHECK_OK(this->write_reg(0x01, buff, sizeof(buff)));
     CHECK_OK(this->stop(false));
 
     return true;
 }
 
 bool ArtronShop_PCF85363A::getTime(struct tm *t) {
-    Time_Date_Register_t reg_data;
-    CHECK_OK(this->read_reg(0x01, (uint8_t *) &reg_data, sizeof(reg_data)));
+    uint8_t buff[7];
+    CHECK_OK(this->read_reg(0x01, buff, sizeof(buff)));
 
-    t->tm_sec = bcd2bin(reg_data.SEC);
-    t->tm_min = bcd2bin(reg_data.MIN);
-    t->tm_hour = bcd2bin(reg_data.HOUR);
-    t->tm_mday = bcd2bin(reg_data.DAY) + 1;
-    t->tm_wday = bcd2bin(reg_data.WEEKDAY);
-    t->tm_mon = bcd2bin(reg_data.MON);
-    t->tm_year = bcd2bin(reg_data.YEAR) + 2000 - 1900;
+    t->tm_sec = bcd2dec(buff[0] & 0x7F);
+    t->tm_min = bcd2dec(buff[1] & 0x7F);
+    t->tm_hour = bcd2dec(buff[2] & 0x3F);
+    t->tm_mday = bcd2dec(buff[3] & 0x3F);
+    t->tm_wday = bcd2dec(buff[4] & 0x07);
+    t->tm_mon = bcd2dec(buff[5] & 0x1F) - 1;
+    t->tm_year = bcd2dec(buff[6]) + 2000 - 1900;
 
     return true;
 }
