@@ -1,11 +1,11 @@
-#ifndef __ARTRONSHOP_PCF85363A_H__
-#define __ARTRONSHOP_PCF85363A_H__
+#ifndef __ARTRONSHOP_PCF85363_H__
+#define __ARTRONSHOP_PCF85363_H__
 
 #include <Arduino.h>
 #include <Wire.h>
 #include <time.h>
 
-class ArtronShop_PCF85363A {
+class ArtronShop_PCF85363 {
     private:
         const int _addr = 0x51;
         TwoWire *_wire = NULL;
