@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include <ArtronShop_PCF85363A.h>
+#include <ArtronShop_PCF85363.h>
 #include <Wire.h>
 #include <time.h>
 
@@ -9,7 +9,7 @@
  *    2) Press RESET button on your board, you will see count is up continul after board boot again
 */
 
-ArtronShop_PCF85363A rtc(&Wire);
+ArtronShop_PCF85363 rtc(&Wire);
 
 uint8_t counter = 0;
 
