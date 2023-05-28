@@ -1,9 +1,9 @@
 #include <Arduino.h>
-#include <ArtronShop_PCF85363A.h>
+#include <ArtronShop_PCF85363.h>
 #include <Wire.h>
 #include <time.h>
 
-ArtronShop_PCF85363A rtc(&Wire);
+ArtronShop_PCF85363 rtc(&Wire);
 
 void setup() {
   Serial.begin(115200);
