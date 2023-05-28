@@ -1,22 +1,22 @@
 #include "ArtronShop_PCF85363.h"
 
 
-ArtronShop_PCF85363A::ArtronShop_PCF85363A(TwoWire *wire) : _wire(wire) {
+ArtronShop_PCF85363::ArtronShop_PCF85363(TwoWire *wire) : _wire(wire) {
     // ----
 }
 
-bool ArtronShop_PCF85363A::write_reg(uint8_t reg, uint8_t *value, size_t len) {
+bool ArtronShop_PCF85363::write_reg(uint8_t reg, uint8_t *value, size_t len) {
     this->_wire->beginTransmission(this->_addr);
     this->_wire->write(reg);
     this->_wire->write(value, len);
     return this->_wire->endTransmission() == 0;
 }
 
-bool ArtronShop_PCF85363A::write_reg(uint8_t reg, uint8_t value) {
+bool ArtronShop_PCF85363::write_reg(uint8_t reg, uint8_t value) {
     return this->write_reg(reg, &value, 1);
 }
 
-bool ArtronShop_PCF85363A::read_reg(uint8_t reg, uint8_t *value, size_t len) {
+bool ArtronShop_PCF85363::read_reg(uint8_t reg, uint8_t *value, size_t len) {
     this->_wire->beginTransmission(this->_addr);
     this->_wire->write(reg);
     if (this->_wire->endTransmission(false) != 0) {
@@ -33,21 +33,21 @@ bool ArtronShop_PCF85363A::read_reg(uint8_t reg, uint8_t *value, size_t len) {
     return true;
 }
 
-uint8_t ArtronShop_PCF85363A::read_reg(uint8_t reg) {
+uint8_t ArtronShop_PCF85363::read_reg(uint8_t reg) {
     uint8_t value = 0;
     this->read_reg(reg, &value, 1);
     return value;
 }
 
-bool ArtronShop_PCF85363A::stop(bool stop) {
+bool ArtronShop_PCF85363::stop(bool stop) {
     return this->write_reg(0x2E, stop ? 0x01 : 0x00);
 }
 
-uint8_t ArtronShop_PCF85363A::bcd2dec(uint8_t bcd) {
+uint8_t ArtronShop_PCF85363::bcd2dec(uint8_t bcd) {
     return ((bcd >> 4) * 10) + (bcd & 0x0F);
 }
 
-uint8_t ArtronShop_PCF85363A::dec2bcd(uint8_t bin) {
+uint8_t ArtronShop_PCF85363::dec2bcd(uint8_t bin) {
     return (((bin / 10) << 4) & 0xF0) | ((bin % 10) & 0x0F);
 }
 
@@ -57,7 +57,7 @@ uint8_t ArtronShop_PCF85363A::dec2bcd(uint8_t bin) {
     } \
 }
 
-bool ArtronShop_PCF85363A::begin() {
+bool ArtronShop_PCF85363::begin() {
     CHECK_OK(this->stop(false)); // clear STOP bit
 
     /* 
@@ -76,7 +76,7 @@ bool ArtronShop_PCF85363A::begin() {
     return true;
 }
 
-bool ArtronShop_PCF85363A::setTime(struct tm t) {
+bool ArtronShop_PCF85363::setTime(struct tm t) {
     uint8_t buff[7];
     buff[0] = dec2bcd(t.tm_sec) & 0x7F;
     buff[1] = dec2bcd(t.tm_min) & 0x7F;
@@ -93,7 +93,7 @@ bool ArtronShop_PCF85363A::setTime(struct tm t) {
     return true;
 }
 
-bool ArtronShop_PCF85363A::getTime(struct tm *t) {
+bool ArtronShop_PCF85363::getTime(struct tm *t) {
     uint8_t buff[7];
     CHECK_OK(this->read_reg(0x01, buff, sizeof(buff)));
 
@@ -108,11 +108,11 @@ bool ArtronShop_PCF85363A::getTime(struct tm *t) {
     return true;
 }
 
-bool ArtronShop_PCF85363A::writeRAM(uint8_t address, uint8_t value) {
+bool ArtronShop_PCF85363::writeRAM(uint8_t address, uint8_t value) {
     return this->writeRAM(address, &value, 1);
 }
 
-size_t ArtronShop_PCF85363A::writeRAM(uint8_t address, uint8_t *value, size_t len) {
+size_t ArtronShop_PCF85363::writeRAM(uint8_t address, uint8_t *value, size_t len) {
     if (address > 63) { // Oversize of 64-bytes RAM
         return 0;
     }
@@ -128,7 +128,7 @@ size_t ArtronShop_PCF85363A::writeRAM(uint8_t address, uint8_t *value, size_t le
     return len;
 }
 
-bool ArtronShop_PCF85363A::readRAM(uint8_t address, uint8_t *value, size_t len) {
+bool ArtronShop_PCF85363::readRAM(uint8_t address, uint8_t *value, size_t len) {
     if (address > 63) { // Oversize of 64-bytes RAM
         return false;
     }
@@ -140,7 +140,7 @@ bool ArtronShop_PCF85363A::readRAM(uint8_t address, uint8_t *value, size_t len) 
     return this->read_reg(0x40 + address, value, len);
 }
 
-uint8_t ArtronShop_PCF85363A::readRAM(uint8_t address) {
+uint8_t ArtronShop_PCF85363::readRAM(uint8_t address) {
     uint8_t value = 0xFF;
     this->readRAM(address, &value, 1);
     return value;
