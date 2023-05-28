@@ -21,7 +21,7 @@ class ArtronShop_PCF85363 {
         uint8_t dec2bcd(uint8_t bin) ;
 
     public:
-        ArtronShop_PCF85363A(TwoWire *wire = &Wire) ;
+        ArtronShop_PCF85363(TwoWire *wire = &Wire) ;
 
         bool begin() ;
         bool setTime(struct tm t) ;
